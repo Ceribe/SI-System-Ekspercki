@@ -1,0 +1,735 @@
+package com.sample
+import javax.swing.JOptionPane
+import javax.swing.JFrame
+import org.kie.api.runtime.KieRuntime
+import javax.swing.JRadioButton
+import javax.swing.JPanel
+import java.util.ArrayList
+import java.util.List
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import javax.swing.JLabel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+global JFrame frame
+global javax.swing.JTextArea textArea
+
+
+declare UserInteraction
+    question : String
+    answer : String
+end
+
+
+function void ShowWindow(JFrame frame, String text) {
+    final JPanel panel = new JPanel();
+    panel.add(new JLabel(text));
+    JOptionPane.showMessageDialog(frame, panel);
+}
+    
+function UserInteraction AskUser(JFrame frame, String questionString, ArrayList answerList) {
+
+	//Tworzenie paneli i dodanie do niego guzików
+    final JPanel panel = new JPanel(new GridLayout(0, 1));
+    panel.add(new JLabel(questionString));
+    Boolean bFirstButtonInited = false;
+    ButtonGroup group = new ButtonGroup();
+    for (int i = 0; i < answerList.size(); i++) {
+        String text = answerList.get(i).toString();
+        JRadioButton aButton = new JRadioButton(text);
+        //Pierwszemu buttonowi trzeba ustawic, ¿e jest wybrany
+        if(!bFirstButtonInited)
+        {
+        	aButton.setSelected(true);
+        	bFirstButtonInited = true;
+        }
+        
+        //Panel jest podawany do wyswietlenia potem w okienku, wiec trzeba na niego na³o¿yæ buttony
+        panel.add(aButton);
+        
+        //Zgrupowanie radiobuttonów powoduje, ¿e po klikniêciu któregoœ z grupy reszta siê odkliknie
+        group.add(aButton);
+    }
+
+
+	//Wyœwietla okienko z pytaniem i odpowiedziami
+    if (JOptionPane.showConfirmDialog(frame, panel, "Question", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE) < 0) {
+    	//To gwarantuje, ¿e nie odpali siê, ¿adna regu³a
+        return new UserInteraction(questionString, "WindowClosed");
+    }
+    String userAnswer = "";
+    //Wyci¹gniêcie stringa z zaznaczonwego buttona
+    for (Enumeration<AbstractButton> buttons = group.getElements(); buttons.hasMoreElements();) {
+    	AbstractButton button = buttons.nextElement();
+        if (button.isSelected()) {
+        	userAnswer = button.getText();
+        }
+    }
+    return new UserInteraction(questionString, userAnswer);
+}
+
+rule "Start out by choosing the kind of projekt that you'll need yout typeface for"
+    when
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("Newspaper");
+    possibleAnswers.add("LOGO");
+    possibleAnswers.add("BOOK");
+    UserInteraction userInteraction = AskUser(frame,  "Start out by choosing the kind of projekt that you'll need yout typeface for", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "Start out by choosing the kind of projekt that you'll need yout typeface for - Newspaper"
+    when
+    UserInteraction(question == "Start out by choosing the kind of projekt that you'll need yout typeface for" && answer == "Newspaper")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("TEXT FACE");
+    possibleAnswers.add("DISPLAY");
+    possibleAnswers.add("COMBINATION");
+    UserInteraction userInteraction = AskUser(frame, "Choose", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "Choose - TEXT FACE"
+    when
+    UserInteraction(question == "Choose" && answer == "TEXT FACE")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "DO PEOPLE CALL YOU BORING FROM TIME TO TIME?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "DO PEOPLE CALL YOU BORING FROM TIME TO TIME? - YES"
+    when
+    UserInteraction(question == "DO PEOPLE CALL YOU BORING FROM TIME TO TIME?" && answer == "YES")
+    then
+    ShowWindow(frame, "Times");
+end
+
+
+rule "DO PEOPLE CALL YOU BORING FROM TIME TO TIME? - NO"
+    when
+    UserInteraction(question == "DO PEOPLE CALL YOU BORING FROM TIME TO TIME?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "HOW ABOUT SOMTHING HEAVILY USED?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HOW ABOUT SOMTHING HEAVILY USED? - YES"
+    when
+    UserInteraction(question == "HOW ABOUT SOMTHING HEAVILY USED?" && answer == "YES")
+    then
+    ShowWindow(frame, "Miller");
+end
+
+
+rule "HOW ABOUT SOMTHING HEAVILY USED? - NO"
+    when
+    UserInteraction(question == "HOW ABOUT SOMTHING HEAVILY USED?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOOD");
+    possibleAnswers.add("BAD");
+    UserInteraction userInteraction = AskUser(frame, "HOW ABOUT SOMETHING AWARD WINNING?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HOW ABOUT SOMETHING AWARD WINNING? - GOOD"
+    when
+    UserInteraction(question == "HOW ABOUT SOMETHING AWARD WINNING?" && answer == "GOOD")
+    then
+    ShowWindow(frame, "Proforma");
+end
+
+
+rule "HOW ABOUT SOMETHING AWARD WINNING? - BAD"
+    when
+    UserInteraction(question == "HOW ABOUT SOMETHING AWARD WINNING?" && answer == "BAD")
+    then
+    ShowWindow(frame, "Arnhem");
+end
+
+
+rule "Choose - DISPLAY"
+    when
+    UserInteraction(question == "Choose" && answer == "DISPLAY")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "DO YOU LIKE IT TRADITIONAL", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "DO YOU LIKE IT TRADITIONAL - YES"
+    when
+    UserInteraction(question == "DO YOU LIKE IT TRADITIONAL" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "IT'S OKAY WITH YOU IF IT'S SWISS", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "IT'S OKAY WITH YOU IF IT'S SWISS - YES"
+    when
+    UserInteraction(question == "IT'S OKAY WITH YOU IF IT'S SWISS" && answer == "YES")
+    then
+    ShowWindow(frame, "Helvetica");
+end
+
+
+rule "IT'S OKAY WITH YOU IF IT'S SWISS - NO"
+    when
+    UserInteraction(question == "IT'S OKAY WITH YOU IF IT'S SWISS" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("NEW");
+    possibleAnswers.add("OLD");
+    UserInteraction userInteraction = AskUser(frame, "OKAY, TO A QUESTION OF AGE", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "OKAY, TO A QUESTION OF AGE - NEW"
+    when
+    UserInteraction(question == "OKAY, TO A QUESTION OF AGE" && answer == "NEW")
+    then
+    ShowWindow(frame, "Interstate");
+end
+
+
+rule "OKAY, TO A QUESTION OF AGE - OLD"
+    when
+    UserInteraction(question == "OKAY, TO A QUESTION OF AGE" && answer == "OLD")
+    then
+    ShowWindow(frame,  "Franklin Gothic");
+end
+
+
+rule "DO YOU LIKE IT TRADITIONAL - NO"
+    when
+    UserInteraction(question == "DO YOU LIKE IT TRADITIONAL" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "SOMETHING MODERN, YET PLAINSPOKEN", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "SOMETHING MODERN, YET PLAINSPOKEN - YES"
+    when
+    UserInteraction(question == "SOMETHING MODERN, YET PLAINSPOKEN" && answer == "YES")
+    then
+    ShowWindow(frame, "Gotham");
+end
+
+
+rule "SOMETHING MODERN, YET PLAINSPOKEN - NO"
+    when
+    UserInteraction(question == "SOMETHING MODERN, YET PLAINSPOKEN" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "NOT AFRAID TO BE ASKED IF YOU LIVE IN THE NINETIES?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "NOT AFRAID TO BE ASKED IF YOU LIVE IN THE NINETIES? - YES"
+    when
+    UserInteraction(question == "NOT AFRAID TO BE ASKED IF YOU LIVE IN THE NINETIES?" && answer == "YES")
+    then
+    ShowWindow(frame, "Helvetica");
+end
+
+
+rule "NOT AFRAID TO BE ASKED IF YOU LIVE IN THE NINETIES? - NO"
+    when
+    UserInteraction(question == "NOT AFRAID TO BE ASKED IF YOU LIVE IN THE NINETIES?" && answer == "NO")
+    then
+    ShowWindow(frame,  "FF Meta");
+end
+
+
+rule "Choose - COMBINATION"
+    when
+    UserInteraction(question == "Choose" && answer == "COMBINATION")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "THINK MR. SPIEKERMANN IS MOSTLY RIGHT?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "THINK MR. SPIEKERMANN IS MOSTLY RIGHT? - YES"
+    when
+    UserInteraction(question == "THINK MR. SPIEKERMANN IS MOSTLY RIGHT?" && answer == "YES")
+    then
+    ShowWindow(frame, "Arnhem");
+end
+
+
+rule "THINK MR. SPIEKERMANN IS MOSTLY RIGHT? - NO"
+    when
+    UserInteraction(question == "THINK MR. SPIEKERMANN IS MOSTLY RIGHT?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "THE NETHERLANDS IS NICE, RIGHT?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "THE NETHERLANDS IS NICE, RIGHT? - YES"
+    when
+    UserInteraction(question == "THE NETHERLANDS IS NICE, RIGHT?" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("OK");
+    UserInteraction userInteraction = AskUser(frame, "MMM, SPIKY SERIFS ARE NICE", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "MMM, SPIKY SERIFS ARE NICE - OK"
+    when
+    UserInteraction(question == "MMM, SPIKY SERIFS ARE NICE" && answer == "OK")
+    then
+    ShowWindow(frame, "Swift");
+end
+
+
+rule "THE NETHERLANDS IS NICE, RIGHT? - NO"
+    when
+    UserInteraction(question == "THE NETHERLANDS IS NICE, RIGHT?" && answer == "NO")
+    then
+    ShowWindow(frame, "GET OUT OF MY FLOWCHART!");
+end
+
+
+rule "Start out by choosing the kind of projekt that you'll need yout typeface for - LOGO"
+    when
+    UserInteraction(question == "Start out by choosing the kind of projekt that you'll need yout typeface for" && answer == "LOGO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("A SANS SERIF MAYBE?");
+    possibleAnswers.add("OR PERHAPS A SERIF?");
+    UserInteraction userInteraction = AskUser(frame, "Choose", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "Choose - A SANS SERIF MAYBE?"
+    when
+    UserInteraction(question == "Choose" && answer == "A SANS SERIF MAYBE?")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "YOU LIKE GEOMETRICS?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "YOU LIKE GEOMETRICS? - YES"
+    when
+    UserInteraction(question == "YOU LIKE GEOMETRICS?" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "DO YOU LIKE FUTURA?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "DO YOU LIKE FUTURA? - YES"
+    when
+    UserInteraction(question == "DO YOU LIKE FUTURA?" && answer == "YES")
+    then
+    ShowWindow(frame, "Futura");
+end
+
+
+rule "DO YOU LIKE FUTURA? - NO"
+    when
+    UserInteraction(question == "DO YOU LIKE FUTURA?" && answer == "NO")
+    then
+    ShowWindow(frame, "Metro");
+end
+
+
+rule "YOU LIKE GEOMETRICS? - NO"
+    when
+    UserInteraction(question == "YOU LIKE GEOMETRICS?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "A NEO GROTESK PERHAPS?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "A NEO GROTESK PERHAPS? - YES"
+    when
+    UserInteraction(question == "A NEO GROTESK PERHAPS?" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOOD");
+    possibleAnswers.add("BAD");
+    UserInteraction userInteraction = AskUser(frame, "IF I SAY SCIENCE FICTION MOVIES ARE MY FAVOURITE", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "IF I SAY SCIENCE FICTION MOVIES ARE MY FAVOURITE - GOOD"
+    when
+    UserInteraction(question == "IF I SAY SCIENCE FICTION MOVIES ARE MY FAVOURITE" && answer == "GOOD")
+    then
+    ShowWindow(frame, "Eurostile");
+end
+
+
+rule "IF I SAY SCIENCE FICTION MOVIES ARE MY FAVOURITE - BAD"
+    when
+    UserInteraction(question == "IF I SAY SCIENCE FICTION MOVIES ARE MY FAVOURITE" && answer == "BAD")
+    then
+    ShowWindow(frame, "Helvetica");
+end
+
+
+rule "A NEO GROTESK PERHAPS? - NO"
+    when
+    UserInteraction(question == "A NEO GROTESK PERHAPS?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "SOMETHING HUMANISITIC, THEN?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "SOMETHING HUMANISITIC, THEN? - YES"
+    when
+    UserInteraction(question == "SOMETHING HUMANISITIC, THEN?" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "DO YOU LIKE THE LOOK OF ADOBE?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "DO YOU LIKE THE LOOK OF ADOBE? - YES"
+    when
+    UserInteraction(question == "DO YOU LIKE THE LOOK OF ADOBE?" && answer == "YES")
+    then
+    ShowWindow(frame, "Myriad");
+end
+
+
+rule "DO YOU LIKE THE LOOK OF ADOBE? - NO"
+    when
+    UserInteraction(question == "DO YOU LIKE THE LOOK OF ADOBE?" && answer == "NO")
+    then
+    ShowWindow(frame, "Frutiger");
+end
+
+
+rule "SOMETHING HUMANISITIC, THEN? - NO"
+    when
+    UserInteraction(question == "SOMETHING HUMANISITIC, THEN?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "HOW ABOUT SOMETHING CLASSIC?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HOW ABOUT SOMETHING CLASSIC? - YES"
+    when
+    UserInteraction(question == "HOW ABOUT SOMETHING CLASSIC?" && answer == "YES")
+    then
+    ShowWindow(frame, "Akzidenz Grotesk");
+end
+
+
+rule "HOW ABOUT SOMETHING CLASSIC? - NO"
+    when
+    UserInteraction(question == "HOW ABOUT SOMETHING CLASSIC?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("OK");
+    UserInteraction userInteraction = AskUser(frame, "THEN WE ONLY HAVE SOMETHING DECORATIVE", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "THEN WE ONLY HAVE SOMETHING DECORATIVE - OK"
+    when
+    UserInteraction(question == "THEN WE ONLY HAVE SOMETHING DECORATIVE" && answer == "OK")
+    then
+    ShowWindow(frame, "PEIGNOT");
+end
+
+
+rule "Choose - OR PERHAPS A SERIF?"
+    when
+    UserInteraction(question == "Choose" && answer == "OR PERHAPS A SERIF?")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOOD");
+    possibleAnswers.add("BAD");
+    UserInteraction userInteraction = AskUser(frame, "HOW DO THE WORDS SEMI SANS, SEMI SERIF SOUND?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HOW DO THE WORDS SEMI SANS, SEMI SERIF SOUND? - GOOD"
+    when
+    UserInteraction(question == "HOW DO THE WORDS SEMI SANS, SEMI SERIF SOUND?" && answer == "GOOD")
+    then
+    ShowWindow(frame, "Rotis");
+end
+
+
+rule "HOW DO THE WORDS SEMI SANS, SEMI SERIF SOUND? - BAD"
+    when
+    UserInteraction(question == "HOW DO THE WORDS SEMI SANS, SEMI SERIF SOUND?" && answer == "BAD")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOOD");
+    possibleAnswers.add("BAD");
+    UserInteraction userInteraction = AskUser(frame, "SOMETHING NEW, GOT SERIFS, GOT SANS?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "SOMETHING NEW, GOT SERIFS, GOT SANS? - GOOD"
+    when
+    UserInteraction(question == "SOMETHING NEW, GOT SERIFS, GOT SANS?" && answer == "GOOD")
+    then
+    ShowWindow(frame, "Fedra");
+end
+
+
+rule "SOMETHING NEW, GOT SERIFS, GOT SANS? - BAD"
+    when
+    UserInteraction(question == "SOMETHING NEW, GOT SERIFS, GOT SANS?" && answer == "BAD")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "IS IT AN ITALIAN RESTAURANT?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "IS IT AN ITALIAN RESTAURANT? - YES"
+    when
+    UserInteraction(question == "IS IT AN ITALIAN RESTAURANT?" && answer == "YES")
+    then
+    ShowWindow(frame, "Bodoni");
+end
+
+
+rule "IS IT AN ITALIAN RESTAURANT? - NO"
+    when
+    UserInteraction(question == "IS IT AN ITALIAN RESTAURANT?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "GOT A WHOLE BUNCH OF OFFICE CORESPONDENCE", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "GOT A WHOLE BUNCH OF OFFICE CORESPONDENCE - YES"
+    when
+    UserInteraction(question == "GOT A WHOLE BUNCH OF OFFICE CORESPONDENCE" && answer == "YES")
+    then
+    ShowWindow(frame, "Lexicon");
+end
+
+
+rule "GOT A WHOLE BUNCH OF OFFICE CORESPONDENCE - NO"
+    when
+    UserInteraction(question == "GOT A WHOLE BUNCH OF OFFICE CORESPONDENCE" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("OK");
+    UserInteraction userInteraction = AskUser(frame, "HERE WE HAVE A CLASSIC WAITING FOR YOU", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HERE WE HAVE A CLASSIC WAITING FOR YOU - OK"
+    when
+    UserInteraction(question == "HERE WE HAVE A CLASSIC WAITING FOR YOU" && answer == "OK")
+    then
+    ShowWindow(frame, "Palatino");
+end
+
+
+rule "Start out by choosing the kind of projekt that you'll need yout typeface for - BOOK"
+    when
+    UserInteraction(question == "Start out by choosing the kind of projekt that you'll need yout typeface for" && answer == "BOOK")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "ARE YOU COMPLETELY IN DOUBT?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "ARE YOU COMPLETELY IN DOUBT? - YES"
+    when
+    UserInteraction(question == "ARE YOU COMPLETELY IN DOUBT?" && answer == "YES")
+    then
+    ShowWindow(frame, "Caslon");
+end
+
+
+rule "ARE YOU COMPLETELY IN DOUBT? - NO"
+    when
+    UserInteraction(question == "ARE YOU COMPLETELY IN DOUBT?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "A CHAMPTION IN USABILITY PERHAPS?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "A CHAMPTION IN USABILITY PERHAPS? - YES"
+    when
+    UserInteraction(question == "A CHAMPTION IN USABILITY PERHAPS?" && answer == "YES")
+    then
+    ShowWindow(frame, "Minion");
+end
+
+
+rule "A CHAMPTION IN USABILITY PERHAPS? - NO"
+    when
+    UserInteraction(question == "A CHAMPTION IN USABILITY PERHAPS?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "EVERYBODY LOVES GARAMOND", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "EVERYBODY LOVES GARAMOND - YES"
+    when
+    UserInteraction(question == "EVERYBODY LOVES GARAMOND" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("NO");
+    possibleAnswers.add("YES");
+    UserInteraction userInteraction = AskUser(frame, "BUT PERHAPS ONE WOULD A LARGER EYE?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "BUT PERHAPS ONE WOULD A LARGER EYE? - NO"
+    when
+    UserInteraction(question == "BUT PERHAPS ONE WOULD A LARGER EYE?" && answer == "NO")
+    then
+    ShowWindow(frame, "Garamond");
+end
+
+
+rule "BUT PERHAPS ONE WOULD A LARGER EYE? - YES"
+    when
+    UserInteraction(question == "BUT PERHAPS ONE WOULD A LARGER EYE?" && answer == "YES")
+    then
+    ShowWindow(frame, "Sabon");
+end
+
+
+rule "EVERYBODY LOVES GARAMOND - NO"
+    when
+    UserInteraction(question == "EVERYBODY LOVES GARAMOND" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "SO YOU WANT A SANS SERIF, IS THAT THE CASE?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "SO YOU WANT A SANS SERIF, IS THAT THE CASE? - YES"
+    when
+    UserInteraction(question == "SO YOU WANT A SANS SERIF, IS THAT THE CASE?" && answer == "YES")
+    then
+    ShowWindow(frame, "Optima");
+end
+
+
+rule "SO YOU WANT A SANS SERIF, IS THAT THE CASE? - NO"
+    when
+    UserInteraction(question == "SO YOU WANT A SANS SERIF, IS THAT THE CASE?" && answer == "NO")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOOD");
+    possibleAnswers.add("BAD");
+    UserInteraction userInteraction = AskUser(frame, "WHAT IS YOUR OPINION OF ERIC GILL", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "WHAT IS YOUR OPINION OF ERIC GILL - GOOD"
+    when
+    UserInteraction(question == "WHAT IS YOUR OPINION OF ERIC GILL" && answer == "GOOD")
+    then
+    ShowWindow(frame, "Joanna");
+end
+
+
+rule "WHAT IS YOUR OPINION OF ERIC GILL - BAD"
+    when
+    UserInteraction(question == "WHAT IS YOUR OPINION OF ERIC GILL" && answer == "BAD")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("YES");
+    possibleAnswers.add("NO");
+    UserInteraction userInteraction = AskUser(frame, "HUMANISTIC FORMS PLEASE YOUR EYE?", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "HUMANISTIC FORMS PLEASE YOUR EYE? - YES"
+    when
+    UserInteraction(question == "HUMANISTIC FORMS PLEASE YOUR EYE?" && answer == "YES")
+    then
+    ArrayList<String> possibleAnswers = new ArrayList<>();
+    possibleAnswers.add("GOUDA");
+    possibleAnswers.add("EMMENTAL");
+    UserInteraction userInteraction = AskUser(frame, "OKAY TO A QUESTION OF FOOD", possibleAnswers);
+    insert (userInteraction);
+end
+
+rule "OKAY TO A QUESTION OF FOOD - GOUDA"
+    when
+    UserInteraction(question == "OKAY TO A QUESTION OF FOOD" && answer == "GOUDA")
+    then
+    ShowWindow(frame, "FF Scala");
+end
+
+
+rule "OKAY TO A QUESTION OF FOOD - EMMENTAL"
+    when
+    UserInteraction(question == "OKAY TO A QUESTION OF FOOD" && answer == "EMMENTAL")
+    then
+    ShowWindow(frame, "Syntax");
+end
+
+
+rule "HUMANISTIC FORMS PLEASE YOUR EYE? - NO"
+    when
+    UserInteraction(question == "HUMANISTIC FORMS PLEASE YOUR EYE?" && answer == "NO")
+    then
+    ShowWindow(frame, "Baskerville");
+end
+
